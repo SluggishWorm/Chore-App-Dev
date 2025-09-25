@@ -7,7 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 export default function CalendarView({ prefs }) {
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
+  const fetchEvents = () => {
     fetch("http://localhost:8000/events")
       .then((res) => res.json())
       .then((data) =>
@@ -19,7 +19,14 @@ export default function CalendarView({ prefs }) {
             end: e.end,
           }))
         )
-      );
+      )
+      .catch((err) => console.error("Failed to fetch events:", err));
+  };
+
+  useEffect(() => {
+    fetchEvents(); // initial load
+    const interval = setInterval(fetchEvents, 5000); // refresh every 5 seconds
+    return () => clearInterval(interval); // cleanup
   }, []);
 
   return (
