@@ -1,3 +1,4 @@
+import "./calendar.css";
 import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -23,6 +24,7 @@ export default function CalendarView({ prefs }) {
 
   return (
     <div
+      className={prefs.darkMode ? "dark-calendar" : ""}
       style={{
         padding: "20px",
         backgroundColor: prefs.darkMode ? "#1e1e1e" : "#f9f9f9",
