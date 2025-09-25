@@ -147,4 +147,7 @@ Backend allows:
 ---
 
 ## 🧾 License
-MIT — see `LICENSE`.
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** license.  
+You are free to use and modify it, but **commercial use is not allowed**.  
+
+See the full license text here: [LICENSE](LICENSE).
