@@ -5,7 +5,7 @@ export default function ChoreList() {
   const [title, setTitle] = useState("");
   const [assignee, setAssignee] = useState("");
   const [recurrence, setRecurrence] = useState("");
-  const [due, setDue] = useState(""); // NEW: due date/time
+  const [due, setDue] = useState(""); // ✅ due date state
 
   // Fetch chores
   useEffect(() => {
@@ -18,11 +18,11 @@ export default function ChoreList() {
   const addChore = async (e) => {
     e.preventDefault();
     const newChore = {
-      id: chores.length + 1, // simple incremental ID
+      id: chores.length + 1,
       title,
       assignee,
       recurrence,
-      due: due || null, // NEW: pass due date
+      due: due || null, // ✅ include due date
       completed: false,
     };
 
@@ -38,7 +38,7 @@ export default function ChoreList() {
       setTitle("");
       setAssignee("");
       setRecurrence("");
-      setDue(""); // clear after submit
+      setDue(""); // reset field
     }
   };
 
@@ -79,6 +79,7 @@ export default function ChoreList() {
           value={recurrence}
           onChange={(e) => setRecurrence(e.target.value)}
         />
+        {/* ✅ Due date field right here */}
         <input
           type="datetime-local"
           value={due}
@@ -106,3 +107,4 @@ export default function ChoreList() {
     </div>
   );
 }
+

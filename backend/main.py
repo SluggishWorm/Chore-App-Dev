@@ -2,14 +2,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = FastAPI(title="Chore & Calendar API")
 
-# --- CORS middleware ---
+# --- CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # frontend
+    allow_origins=["http://localhost:3000"],  # allow frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,9 +20,9 @@ class Chore(BaseModel):
     id: int
     title: str
     assignee: str
-    recurrence: Optional[str] = None  # daily, weekly, none
+    recurrence: Optional[str] = None  # "daily", "weekly", etc.
     completed: bool = False
-    due: Optional[datetime] = None  # NEW: due date
+    due: Optional[datetime] = None    # NEW: due date
 
 class Event(BaseModel):
     id: int
@@ -60,22 +60,22 @@ def get_events():
     chore_events = []
     for chore in chores:
         if chore.due:
-            # Single event
+            # add the base chore as an event
             chore_events.append(Event(
                 id=chore.id,
                 title=f"Chore: {chore.title}",
                 start=chore.due,
-                end=chore.due,  # could add duration later
+                end=chore.due + timedelta(hours=1),  # 1hr block
             ))
 
-            # Recurrence handling
+            # recurrence expansion
             if chore.recurrence == "daily":
                 for i in range(1, 7):
                     chore_events.append(Event(
                         id=int(f"{chore.id}{i}"),
                         title=f"Chore: {chore.title} (recurring)",
                         start=chore.due + timedelta(days=i),
-                        end=chore.due + timedelta(days=i),
+                        end=chore.due + timedelta(days=i, hours=1),
                     ))
             elif chore.recurrence == "weekly":
                 for i in range(1, 4):
@@ -83,13 +83,7 @@ def get_events():
                         id=int(f"{chore.id}{i}"),
                         title=f"Chore: {chore.title} (recurring)",
                         start=chore.due + timedelta(weeks=i),
-                        end=chore.due + timedelta(weeks=i),
+                        end=chore.due + timedelta(weeks=i, hours=1),
                     ))
 
     return events + chore_events
-
-
-@app.post("/events", response_model=Event)
-def create_event(event: Event):
-    events.append(event)
-    return event
