@@ -20,8 +20,9 @@ class Chore(BaseModel):
     id: int
     title: str
     assignee: str
-    recurrence: Optional[str] = None
+    recurrence: Optional[str] = None  # daily, weekly, none
     completed: bool = False
+    due: Optional[datetime] = None  # NEW: due date
 
 class Event(BaseModel):
     id: int
@@ -56,7 +57,37 @@ def complete_chore(chore_id: int):
 
 @app.get("/events", response_model=List[Event])
 def get_events():
-    return events
+    chore_events = []
+    for chore in chores:
+        if chore.due:
+            # Single event
+            chore_events.append(Event(
+                id=chore.id,
+                title=f"Chore: {chore.title}",
+                start=chore.due,
+                end=chore.due,  # could add duration later
+            ))
+
+            # Recurrence handling
+            if chore.recurrence == "daily":
+                for i in range(1, 7):
+                    chore_events.append(Event(
+                        id=int(f"{chore.id}{i}"),
+                        title=f"Chore: {chore.title} (recurring)",
+                        start=chore.due + timedelta(days=i),
+                        end=chore.due + timedelta(days=i),
+                    ))
+            elif chore.recurrence == "weekly":
+                for i in range(1, 4):
+                    chore_events.append(Event(
+                        id=int(f"{chore.id}{i}"),
+                        title=f"Chore: {chore.title} (recurring)",
+                        start=chore.due + timedelta(weeks=i),
+                        end=chore.due + timedelta(weeks=i),
+                    ))
+
+    return events + chore_events
+
 
 @app.post("/events", response_model=Event)
 def create_event(event: Event):

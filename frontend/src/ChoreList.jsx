@@ -5,6 +5,7 @@ export default function ChoreList() {
   const [title, setTitle] = useState("");
   const [assignee, setAssignee] = useState("");
   const [recurrence, setRecurrence] = useState("");
+  const [due, setDue] = useState(""); // NEW: due date/time
 
   // Fetch chores
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function ChoreList() {
       title,
       assignee,
       recurrence,
+      due: due || null, // NEW: pass due date
       completed: false,
     };
 
@@ -36,6 +38,7 @@ export default function ChoreList() {
       setTitle("");
       setAssignee("");
       setRecurrence("");
+      setDue(""); // clear after submit
     }
   };
 
@@ -76,6 +79,11 @@ export default function ChoreList() {
           value={recurrence}
           onChange={(e) => setRecurrence(e.target.value)}
         />
+        <input
+          type="datetime-local"
+          value={due}
+          onChange={(e) => setDue(e.target.value)}
+        />
         <button type="submit">Add Chore</button>
       </form>
 
@@ -89,7 +97,8 @@ export default function ChoreList() {
                 onChange={() => completeChore(chore.id)}
               />
               {chore.title} — {chore.assignee}{" "}
-              {chore.recurrence ? `(${chore.recurrence})` : ""}
+              {chore.recurrence ? `(${chore.recurrence})` : ""}{" "}
+              {chore.due ? `— Due: ${new Date(chore.due).toLocaleString()}` : ""}
             </label>
           </li>
         ))}
